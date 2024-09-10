@@ -1,4 +1,8 @@
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 import prisma from './prisma';
+
+const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 const resolvers = {
   Query: {
@@ -19,34 +23,81 @@ const resolvers = {
     },
   },
   Mutation: {
-    createRestaurant: async (_, { name, description }) => {
+    createRestaurant: async (_, { name, description }, {user}) => {
+      if (!user) {
+        throw new Error("Autenticação necessária");
+      }
+      
       return await prisma.restaurant.create({
         data: {
-          name, description
-        }
-      })
+          name,
+          description,
+        },
+      });
     },
     createDish: async (_, { restaurantId, name, price }) => {
 
-      if(price <= 0) {
+      if (price <= 0) {
         throw new Error("Price must be greater than 0");
-      } 
+      }
 
       return await prisma.dish.create({
         data: {
-          name, price, restaurant: {
-            connect: { id: Number(restaurantId) }
-          }
-        }
-      })
-    }
+          name,
+          price,
+          restaurant: {
+            connect: { id: Number(restaurantId) },
+          },
+        },
+      });
+    },
+
+    // Mutation para registrar novo usuário
+    signup: async (_, { email, password, name }) => {
+      const hashedPassword = await bcrypt.hash(password, 10); // Hash da senha
+      const user = await prisma.user.create({
+        data: {
+          email,
+          password: hashedPassword,
+          name,
+        },
+      });
+
+      const token = jwt.sign({ userId: user.id }, SECRET);
+
+      return {
+        token,
+        user,
+      };
+    },
+
+    // Mutation para login de usuário
+    login: async (_, { email, password }) => {
+      const user = await prisma.user.findUnique({ where: { email } });
+
+      if (!user) {
+        throw new Error("Usuário não encontrado");
+      }
+
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        throw new Error("Senha incorreta");
+      }
+
+      const token = jwt.sign({ userId: user.id }, SECRET);
+
+      return {
+        token,
+        user,
+      };
+    },
   },
   Restaurant: {
     dishes: async (parent) => {
       return await prisma.dish.findMany({
         where: { restaurantId: parent.id },
       });
-    },
+    }
   },
 };
 

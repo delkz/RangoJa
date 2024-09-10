@@ -28,5 +28,8 @@ a ideia é ser um app estilo ifood
 ## Dot Env
 
 ### Backend
-`DATABASE_URL=postgresql://user:passoworld@localhost:5432/dataBase`
+```dotenv
+DATABASE_URL=postgresql://user:passoworld@localhost:5432/dataBase
+JWT_SECRET=supersecretkey 
+```
 ### FrontEnd

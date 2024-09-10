@@ -17,6 +17,17 @@ const typeDefs = gql`
       restaurant: Restaurant!
     }
 
+    type User {
+      id: ID!
+      email: String!
+      name: String!
+    }
+
+    type AuthPayload {
+      token: String!
+      user: User!
+    }
+
     # Queries
     type Query {
       restaurants: [Restaurant!]!
@@ -26,7 +37,14 @@ const typeDefs = gql`
     type Mutation {
       createRestaurant(name: String!, description: String): Restaurant!
       createDish(restaurantId: ID!,name: String!, price: Float!): Dish!
+      signup(email: String!, password: String!, name: String!): AuthPayload!
+      login(email: String!, password: String!): AuthPayload!
     }
+
+
+    
+    
+
 
 `;
 
