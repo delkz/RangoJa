@@ -23,6 +23,11 @@ const typeDefs = gql`
       restaurant(id: ID!): Restaurant
     }
 
+    type Mutation {
+      createRestaurant(name: String!, description: String): Restaurant!
+      createDish(restaurantId: ID!,name: String!, price: Float!): Dish!
+    }
+
 `;
 
 export default typeDefs;
