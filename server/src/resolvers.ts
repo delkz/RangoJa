@@ -37,6 +37,57 @@ const resolvers = {
         }
       })
     },
+    getAllDishes: async (_, __, { prisma }) => {
+      const dishes = await prisma.dish.findMany({
+        include: {
+          restaurant: true, // Inclui o restaurante relacionado
+        },
+      });
+      return dishes;
+    },
+    getOrders: async (_, __, { user, prisma }) => {
+      if (!user) {
+        throw new Error("Autenticação necessária");
+      }
+
+      // Obtém todos os pedidos do usuário
+      const orders = await prisma.order.findMany({
+        where: {
+          userId: user,
+        },
+        include: {
+          items: {
+            include: {
+              dish: true,
+            },
+          },
+        },
+      });
+
+      return orders;
+    },
+    getOrderById: async (_, { orderId },{ user, prisma }) => {
+      if (!user) {
+        throw new Error("Autenticação necessária");
+      }
+
+      const order = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: {
+          items: {
+            include: {
+              dish: true,
+            },
+          },
+        },
+      });
+
+      if (!order || order.userId !== user) {
+        throw new Error("Pedido não encontrado ou você não tem permissão");
+      }
+
+      return order;
+    },
   },
   Mutation: {
     createRestaurant: async (_, { name, description }, { user, prisma }) => {
@@ -144,6 +195,27 @@ const resolvers = {
         token,
         user,
       };
+    },
+
+    updateOrderStatus: async (_, { orderId, status }, { prisma, user }) => {
+      if (!user) {
+        throw new Error("Autenticação necessária");
+      }
+
+      // Atualiza o status do pedido
+      const updatedOrder = await prisma.order.update({
+        where: { id: orderId },
+        data: { status },
+        include: {
+          items: {
+            include: {
+              dish: true,
+            },
+          },
+        },
+      });
+
+      return updatedOrder;
     },
   },
   Restaurant: {

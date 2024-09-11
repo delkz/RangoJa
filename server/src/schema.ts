@@ -46,6 +46,9 @@ const typeDefs = gql`
       restaurants: [Restaurant!]!
       restaurant(id: ID!): Restaurant
       myOrders: [Order!]!
+      getOrders: [Order!]!
+      getOrderById(orderId: Int!): Order
+      getAllDishes: [Dish!]!
     }
 
     type Mutation {
@@ -54,6 +57,7 @@ const typeDefs = gql`
       createOrder(items: [OrderItemInput!]!):Order!
       signup(email: String!, password: String!, name: String!): AuthPayload!
       login(email: String!, password: String!): AuthPayload!
+      updateOrderStatus(orderId: Int!, status: String!): Order!
     }
 
     #Input
