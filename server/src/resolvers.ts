@@ -6,7 +6,7 @@ const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 const resolvers = {
   Query: {
-    restaurants: async () => {
+    restaurants: async (_, __, { user, prisma }) => {
       return await prisma.restaurant.findMany({
         include: {
           dishes: true,
@@ -23,7 +23,7 @@ const resolvers = {
     },
   },
   Mutation: {
-    createRestaurant: async (_, { name, description }, {user}) => {
+    createRestaurant: async (_, { name, description }, {user,prisma}) => {
       if (!user) {
         throw new Error("Autenticação necessária");
       }
@@ -35,7 +35,11 @@ const resolvers = {
         },
       });
     },
-    createDish: async (_, { restaurantId, name, price }) => {
+    createDish: async (_, { restaurantId, name, price }, {user,prisma}) => {
+
+      if (!user) {
+        throw new Error("Autenticação necessária");
+      }
 
       if (price <= 0) {
         throw new Error("Price must be greater than 0");
@@ -53,11 +57,21 @@ const resolvers = {
     },
 
     // Mutation para registrar novo usuário
-    signup: async (_, { email, password, name }) => {
+    signup: async (_, { email, password, name },{prisma}) => {
+
+      const existingUser = await prisma.iser.findUnique({
+        where: {email},
+      })
+
+      if(existingUser){
+        throw new Error("Usuário já existe com esse email");
+        
+      }
+
       const hashedPassword = await bcrypt.hash(password, 10); // Hash da senha
       const user = await prisma.user.create({
         data: {
-          email,
+          email, 
           password: hashedPassword,
           name,
         },
