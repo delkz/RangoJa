@@ -28,23 +28,40 @@ const typeDefs = gql`
       user: User!
     }
 
+    type Order {
+      id: ID!
+      createdAt: String!
+      status: String!
+      items: [OrderItem!]!
+    }
+
+    type OrderItem{
+      id: ID!
+      quantity: Int!
+      dish: Dish!
+    }
+
     # Queries
     type Query {
       restaurants: [Restaurant!]!
       restaurant(id: ID!): Restaurant
+      myOrders: [Order!]!
     }
 
     type Mutation {
       createRestaurant(name: String!, description: String): Restaurant!
       createDish(restaurantId: ID!,name: String!, price: Float!): Dish!
+      createOrder(items: [OrderItemInput!]!):Order!
       signup(email: String!, password: String!, name: String!): AuthPayload!
       login(email: String!, password: String!): AuthPayload!
     }
 
-
+    #Input
+    input OrderItemInput {
+      dishId: ID!
+      quantity: Int!
+    }
     
-    
-
 
 `;
 

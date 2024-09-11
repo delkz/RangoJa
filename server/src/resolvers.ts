@@ -21,13 +21,29 @@ const resolvers = {
         },
       });
     },
+    myOrders: async (_, __, { user, prisma }) => {
+      if (!user) {
+        throw new Error("Autentificação necessária");
+      }
+
+      return await prisma.order.findMany({
+        where: { userId: user },
+        include: {
+          items: {
+            include: {
+              dish: true
+            }
+          }
+        }
+      })
+    },
   },
   Mutation: {
-    createRestaurant: async (_, { name, description }, {user,prisma}) => {
+    createRestaurant: async (_, { name, description }, { user, prisma }) => {
       if (!user) {
         throw new Error("Autenticação necessária");
       }
-      
+
       return await prisma.restaurant.create({
         data: {
           name,
@@ -35,7 +51,7 @@ const resolvers = {
         },
       });
     },
-    createDish: async (_, { restaurantId, name, price }, {user,prisma}) => {
+    createDish: async (_, { restaurantId, name, price }, { user, prisma }) => {
 
       if (!user) {
         throw new Error("Autenticação necessária");
@@ -56,22 +72,46 @@ const resolvers = {
       });
     },
 
+    createOrder: async (_, { items }, { user, prisma }) => {
+      if (!prisma) {
+        throw new Error("Prisma não foi definido no contexto!");
+      }
+
+      if (!user) {
+        throw new Error("Autentificação necessária");
+      }
+
+      const order = await prisma.order.create({
+        data: {
+          user: { connect: { id: user } },
+          items: {
+            create: items.map(item => ({
+              dish: { connect: { id: parseInt(item.dishId) } },
+              quantity: item.quantity
+            })),
+          },
+        },
+        include: { items: { include: { dish: true } } }
+      });
+      return order
+    },
+
     // Mutation para registrar novo usuário
-    signup: async (_, { email, password, name },{prisma}) => {
+    signup: async (_, { email, password, name }, { prisma }) => {
 
       const existingUser = await prisma.iser.findUnique({
-        where: {email},
+        where: { email },
       })
 
-      if(existingUser){
+      if (existingUser) {
         throw new Error("Usuário já existe com esse email");
-        
+
       }
 
       const hashedPassword = await bcrypt.hash(password, 10); // Hash da senha
       const user = await prisma.user.create({
         data: {
-          email, 
+          email,
           password: hashedPassword,
           name,
         },
