@@ -26,6 +26,7 @@ a ideia é ser um app estilo ifood
 
 
 ## Dot Env
+Criar dentro das pastas de cada instancia ./server/.env e ./client/.env
 
 ### Backend
 ```dotenv
