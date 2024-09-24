@@ -4,9 +4,10 @@ services:
   app:
     build: .
     ports:
+      - "4000:4000"  # Expondo a porta do back-end (Apollo Server)
       - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://user:password@db:5432/rangoja
+      - DATABASE_URL=postgresql://user:root@db:5432/rangoja
       - JWT_SECRET=supersecretkey 
     depends_on:
       - db
@@ -20,6 +21,8 @@ services:
       POSTGRES_DB: rangoja
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"  # Expondo a porta do PostgreSQL
 
 volumes:
   db_data:

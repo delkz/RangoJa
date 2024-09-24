@@ -1,23 +1,38 @@
 # Usar uma imagem base do Node.js
 FROM node:20
 
-# Definir o diretório de trabalho dentro do contêiner
+# Definir o diretório de trabalho para a aplicação
 WORKDIR /usr/src/app
 
-# Copiar os arquivos de configuração para o contêiner
-COPY package*.json ./
+# Copiar os arquivos de configuração do backend
+COPY server/package*.json ./server/
 
-RUN apt-get update && apt-get install -y \
-  build-essential \
-  && rm -rf /var/lib/apt/lists/*
-# Instalar as dependências
-RUN npm install
+# Copiar os arquivos de configuração do frontend
+COPY client/package*.json ./client/
+
+# Instalar as dependências do backend
+RUN npm install --prefix ./server
+
+# Instalar as dependências do frontend
+RUN npm install --prefix ./client
+
+# Instalar o concurrently
+RUN npm install -g concurrently
 
 # Copiar o restante do código da aplicação
 COPY . .
 
+# Definir o diretório de trabalho para o Prisma
+WORKDIR /usr/src/app/server
+
+# Executar o prisma generate
+RUN npx prisma generate
+
+# Voltar para o diretório da aplicação
+WORKDIR /usr/src/app
+
 # Expor a porta que a aplicação vai usar
-EXPOSE 3000
+EXPOSE 4000
 
 # Comando para iniciar a aplicação
-CMD ["npm", "start"]
+CMD ["npm", "run", "start"]
