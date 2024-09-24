@@ -29,8 +29,8 @@ Criar dentro das pastas de cada instancia ./server/.env e ./client/.env
 ### Backend
 
 ```dotenv
-DATABASE_URL=postgresql://user:password@db:5432/rangoja
-JWT_SECRET=supersecretkey
+DATABASE_URL=postgresql://user:root@db:5432/rangoja
+JWT_SECRET=supersecretkey 
 ```
 
 ### FrontEnd
