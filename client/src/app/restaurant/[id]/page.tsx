@@ -1,27 +1,41 @@
 import ItemSpot from "@/app/components/itemSpot";
 import { api } from "@/app/services/api";
-// import { Restaurant } from "@/types/types";
-export default async function Restaurant({ params }: { params: { id: string } }) {
+import getImageUrl from "@/app/services/ImageUrl";
+import { Restaurant } from "@/types/types";
+import Image from "next/image";
+export default async function RestaurantPage({ params }: { params: { id: string } }) {
 
-  const restaurantData= await api.post('', {
+  const restaurantData: Restaurant = await api.post('', {
     query: `
-      query Query() {
+      query GetRestaurants {
         restaurant(id: ${params.id}) {
           id
           name
           description
+          imageUrl
+          dishes {
+            name
+            price
+            imageUrl
+            id
+          }
         }
       }
     `,
-  }).then(resp=>resp);
+  }).then(resp => resp.data.data.restaurant);
 
-  console.log(restaurantData)
+  const { name, description, imageUrl,dishes } = restaurantData;
 
   return (
     <div className="">
-      <ItemSpot title={'Prato A'} description={'Descrição do Prato A'} url={'url do Prato a'}/>
-      <ItemSpot title={'Prato B'} description={'Descrição do Prato B'} url={'url do Prato b'}/>
-      <ItemSpot title={'Prato C'} description={'Descrição do Prato C'} url={'url do Prato c'}/>
+      {imageUrl && <Image width={250} height={250} src={getImageUrl(imageUrl)} alt={name} />}
+      <h1>{name}</h1>
+      <h2>{description}</h2>
+      <hr />
+      {dishes && dishes.map(dish=>{
+        return <ItemSpot key={dish.id} imageUrl={dish.imageUrl} title={dish.name} url={dish.id.toString()} />
+      })}
+      
     </div>
   );
 }

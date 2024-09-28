@@ -2,6 +2,7 @@ export type Restaurant = {
     id: number,
     name: string,
     description?: string,
+    imageUrl?:string,
     dishes: Dish[]
 }
 
@@ -11,6 +12,7 @@ export type Dish = {
     price: number,
     restaurant: Restaurant,
     restaurantId: number,
+    imageUrl?:string,
     orders: OrderItem[],
 }
 

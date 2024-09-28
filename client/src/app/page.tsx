@@ -3,6 +3,7 @@ import ItemSpot from './components/itemSpot';
 import { api } from './services/api';
 
 export default async function Home() {
+  
   const restaurants:Restaurant[] = await api.post('', {
     query: `
       query GetRestaurants {
@@ -10,16 +11,16 @@ export default async function Home() {
           id
           name
           description
+          imageUrl
         }
       }
     `,
   }).then(resp=>resp.data.data.restaurants);
 
-  // console.log({restaurants});
   return (
     <div className="">
       {restaurants && restaurants.map((restaurant : Restaurant)=>{
-        return <ItemSpot key={restaurant.id} title={restaurant.name} description={restaurant.description || ""} url={'/restaurant/'+restaurant.id}/>
+        return <ItemSpot key={restaurant.id} title={restaurant.name} imageUrl={restaurant.imageUrl} description={restaurant.description || ""} url={'/restaurant/'+restaurant.id}/>
       })}
     </div>
   );

@@ -5,25 +5,28 @@ import jwt from 'jsonwebtoken';
 import typeDefs from './schema';
 import resolvers from './resolvers';
 import multer from 'multer';
+import path from 'path';
 
 const prisma = new PrismaClient();
 const SECRET = process.env.JWT_SECRET || 'defaultsecret';
 
 const app = express();
 
-// Configuração do Multer para armazenamento de arquivos
+// Configuração para servir a pasta "uploads" como pública
+const uploadDir = path.join(process.cwd(), 'uploads');
+app.use('/uploads', express.static(uploadDir));
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'uploads/'); // Pasta onde os arquivos serão armazenados
+    cb(null, 'uploads/');
   },
   filename: function (req, file, cb) {
-    cb(null, Date.now() + '-' + file.originalname); // Nome do arquivo
+    cb(null, Date.now() + '-' + file.originalname);
   }
 });
 
 const upload = multer({ storage: storage });
 
-// Rota REST para upload de arquivos
 app.post('/upload', upload.single('file'), (req, res) => {
   try {
     const file = req.file;
@@ -37,7 +40,6 @@ app.post('/upload', upload.single('file'), (req, res) => {
   }
 });
 
-// Inicializar o Apollo Server
 const server = new ApolloServer({
   typeDefs,
   resolvers,
@@ -50,7 +52,7 @@ const server = new ApolloServer({
         const decodedToken = jwt.verify(token, SECRET);
         user = decodedToken.userId;
       } catch (error) {
-        console.log("Token inválido", error);
+        console.log('Token inválido', error);
       }
     }
 
@@ -58,7 +60,6 @@ const server = new ApolloServer({
   },
 });
 
-// Aplicar o middleware do Apollo Server ao Express
 server.start().then(() => {
   server.applyMiddleware({ app });
 
