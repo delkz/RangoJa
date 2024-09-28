@@ -4,17 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server": "concurrently \"npx prisma generate\" \"npx tsx src/index.ts\"",
+    "generate": "concurrently \"npx prisma generate\" \"npx tsx src/index.ts\"",
+    "server": "npx tsx src/index.ts",
     "studio": "npx prisma studio",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "@prisma/client": "^5.19.1",
     "apollo-server": "^3.13.0",
+    "apollo-server-express": "^3.13.0",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",
+    "express": "^4.21.0",
     "graphql": "^16.9.0",
-    "jsonwebtoken": "^9.0.2"
+    "graphql-upload": "^16.0.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1"
   },
   "devDependencies": {
     "prisma": "^5.19.1",

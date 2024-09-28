@@ -90,20 +90,21 @@ const resolvers = {
     },
   },
   Mutation: {
-    createRestaurant: async (_, { name, description }, { user, prisma }) => {
+    createRestaurant: async (_,args: { name: string; description: string; imageUrl?: string }, { user, prisma }) => {
       if (!user) {
         throw new Error("Autenticação necessária");
       }
-
+      const { name, description,imageUrl } = args
       return await prisma.restaurant.create({
         data: {
           name,
           description,
+          imageUrl
         },
       });
     },
-    createDish: async (_, { restaurantId, name, price }, { user, prisma }) => {
-
+    createDish: async (_,  args: { name: string; price: number; imageUrl?: string; restaurantId: number }, { user, prisma }) => {
+      const { name, price,imageUrl,restaurantId } = args
       if (!user) {
         throw new Error("Autenticação necessária");
       }
@@ -116,6 +117,7 @@ const resolvers = {
         data: {
           name,
           price,
+          imageUrl,
           restaurant: {
             connect: { id: Number(restaurantId) },
           },
@@ -150,7 +152,7 @@ const resolvers = {
     // Mutation para registrar novo usuário
     signup: async (_, { email, password, name }, { prisma }) => {
 
-      const existingUser = await prisma.iser.findUnique({
+      const existingUser = await prisma.user.findUnique({
         where: { email },
       })
 

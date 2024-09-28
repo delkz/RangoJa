@@ -7,6 +7,7 @@ const typeDefs = gql`
       id: ID!
       name: String!
       description: String
+      imageUrl: String
       dishes: [Dish!]!
     }
 
@@ -14,6 +15,7 @@ const typeDefs = gql`
       id: ID!
       name: String!
       price: Float!
+      imageUrl: String
       restaurant: Restaurant!
     }
 
@@ -52,8 +54,8 @@ const typeDefs = gql`
     }
 
     type Mutation {
-      createRestaurant(name: String!, description: String): Restaurant!
-      createDish(restaurantId: ID!,name: String!, price: Float!): Dish!
+      createRestaurant(name: String!, description: String,imageUrl: String): Restaurant!
+      createDish(restaurantId: ID!,name: String!, price: Float!,imageUrl: String): Dish!
       createOrder(items: [OrderItemInput!]!):Order!
       signup(email: String!, password: String!, name: String!): AuthPayload!
       login(email: String!, password: String!): AuthPayload!

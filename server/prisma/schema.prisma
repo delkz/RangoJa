@@ -17,6 +17,7 @@ model Restaurant {
   id          Int     @id @default(autoincrement())
   name        String
   description String?
+  imageUrl    String?
   dishes      Dish[]
 }
 
@@ -26,6 +27,7 @@ model Dish {
   price        Float
   restaurant   Restaurant  @relation(fields: [restaurantId], references: [id])
   restaurantId Int
+  imageUrl    String?
   orders       OrderItem[]
 }
 
