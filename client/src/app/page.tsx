@@ -1,7 +1,26 @@
-export default function Home() {
+import { Restaurant } from '@/types/types';
+import ItemSpot from './components/itemSpot';
+import { api } from './services/api';
+
+export default async function Home() {
+  const restaurants:Restaurant[] = await api.post('', {
+    query: `
+      query GetRestaurants {
+        restaurants {
+          id
+          name
+          description
+        }
+      }
+    `,
+  }).then(resp=>resp.data.data.restaurants);
+
+  // console.log({restaurants});
   return (
     <div className="">
-      Lorem ipsum dolor sit amet consectetur adipisicing elit. Ducimus facere a est, architecto itaque, at error amet ipsam aspernatur, tempore earum? Amet aspernatur modi voluptas asperiores minima doloribus, hic itaque.
+      {restaurants && restaurants.map((restaurant : Restaurant)=>{
+        return <ItemSpot key={restaurant.id} title={restaurant.name} description={restaurant.description || ""} url={'/restaurant/'+restaurant.id}/>
+      })}
     </div>
   );
 }
