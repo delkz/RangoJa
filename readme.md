@@ -4,6 +4,16 @@ Uma aplicação de estudos que envolve back end e front end.
 
 a ideia é ser um app estilo ifood
 
+## Primeiro uso
+
+### Backend
+
+1- Configure o dot env como abaixo
+2- Rode os comandos a seguir no console
+``npx prisma generate`` 
+``npx prisma migrate deploy`` 
+
+
 ## Tecnologias
 
 ### Backend
