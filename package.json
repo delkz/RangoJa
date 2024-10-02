@@ -11,5 +11,8 @@
   },
   "devDependencies": {
     "concurrently": "^7.0.0"
+  },
+  "dependencies": {
+    "cookies-next": "^4.2.1"
   }
 }

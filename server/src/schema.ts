@@ -51,6 +51,7 @@ const typeDefs = gql`
       getOrders: [Order!]!
       getOrderById(orderId: Int!): Order
       getAllDishes: [Dish!]!
+      validateToken: User
     }
 
     type Mutation {

@@ -88,6 +88,25 @@ const resolvers = {
 
       return order;
     },
+    validateToken: async (parent: any, args: any, context: any) => {
+      const { user, prisma } = context;
+
+      // Verifica se o usuário foi autenticado (token é válido)
+      if (!user) {
+        throw new Error('Token inválido ou não fornecido');
+      }
+
+      // Recupera o usuário do banco de dados
+      const validUser = await prisma.user.findUnique({
+        where: { id: user },
+      });
+
+      if (!validUser) {
+        throw new Error('Usuário não encontrado');
+      }
+
+      return validUser;
+    },
   },
   Mutation: {
     createRestaurant: async (_,args: { name: string; description: string; imageUrl?: string }, { user, prisma }) => {
